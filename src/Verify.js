@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Verify.css';
 
 function Verify() {
+  const [appUrl, setAppUrl] = useState('');
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     // 1. Get the secret params from the URL (sent by Appwrite)
     const params = new URLSearchParams(window.location.search);
@@ -10,30 +13,30 @@ function Verify() {
 
     // 2. Construct the Deep Link with the params
     // This MUST match the scheme in your app.json ("scheme": "parlay-app")
-    const appUrl = `parlay-app://verify?userId=${userId}&secret=${secret}`;
+    const deepLink = `parlay-app://verify?userId=${userId}&secret=${secret}`;
+    setAppUrl(deepLink);
 
-    // 3. Set the button link (fallback)
-    const deepLinkBtn = document.getElementById('deepLinkBtn');
-    if (deepLinkBtn) {
-      deepLinkBtn.href = appUrl;
-    }
-
-    // 4. Attempt Auto-Redirect
+    // 3. Attempt Auto-Redirect
     if (userId && secret) {
-      window.location.href = appUrl;
+      window.location.href = deepLink;
     } else {
-      const body = document.body;
-      if (body) {
-        body.innerHTML = "<h3>Error: Invalid Verification Link</h3>";
-      }
+      setError(true);
     }
   }, []);
+
+  if (error) {
+    return (
+      <div className="verify-container">
+        <h3>Error: Invalid Verification Link</h3>
+      </div>
+    );
+  }
 
   return (
     <div className="verify-container">
       <h3>Verifying your email...</h3>
       <p>If the app doesn't open automatically, click below:</p>
-      <a id="deepLinkBtn" href="#" className="btn">Open App</a>
+      <a href={appUrl} className="btn">Open App</a>
     </div>
   );
 }
