@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { client } from './lib/appwrite';
+
+// Verify Appwrite connection
+client.ping()
+  .then(() => console.log('✅ Appwrite connection verified'))
+  .catch((error) => console.error('❌ Appwrite connection failed:', error));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
